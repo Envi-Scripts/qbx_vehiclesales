@@ -94,17 +94,12 @@ RegisterNetEvent('qb-occasions:server:sellVehicleBack', function(vehData)
     local plate = vehData.plate
     local price = getVehPrice(vehData.model)
     local payout = math.floor(price * 0.5) -- This will give you half of the cars value
-    local result = MySQL.query.await('SELECT * FROM player_vehicles WHERE plate = ? AND citizenid = ?', {plate, player.PlayerData.citizenid})
-    if not result[1] then -- check player actually owns the vehicle
-        return
-    end
     local success = MySQL.query.await('DELETE FROM player_vehicles WHERE plate = ? AND citizenid = ?', {plate, player.PlayerData.citizenid})
     if success and success.affectedRows > 0 then -- only pay out after we delete the vehicle
         player.Functions.AddMoney('bank', payout)
         exports.qbx_core:Notify(src, (locale('success.sold_car_for_price'):format(payout)), 'success', 5500)
     end
 end)
-
 
 RegisterNetEvent('qb-occasions:server:buyVehicle', function(vehicleData)
     local src = source
